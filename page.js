@@ -1,23 +1,31 @@
-import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+async function fetchCharacters() {
+  const res = await fetch("https://rickandmortyapi.com/api/character");
+  if (!res.ok) throw new Error("Could not load characters");
+  const { results } = await res.json();
+  return results;
+}
+
+export default async function Characters() {
+  const characters = await fetchCharacters();
+
   return (
-    <main className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-6">
-      <h1 className="text-5xl md:text-6xl font-bold mb-6 text-green-400 text-center">
-        Welcome to Rick and Morty Explorer
+    <main className="min-h-screen bg-gray-950 text-white p-6">
+      <h1 className="text-4xl font-bold mb-10 text-center text-green-400">
+        All Characters
       </h1>
-      <p className="text-xl md:text-2xl mb-10 text-center max-w-3xl">
-        Discover characters from the multiverse using the Rick and Morty API
-      </p>
 
-      <div className="relative w-72 h-72 md:w-96 md:h-96 mb-10 rounded-2xl overflow-hidden shadow-2xl shadow-green-700/40">
-        <Image
-          src="https://rickandmortyapi.com/api/character/avatar/1.jpeg"
-          alt="Rick Sanchez"
-          fill
-          className="object-cover"
-          priority
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        {characters.map((char) => (
+          <Link
+            key={char.id}
+            href={`/characters/${char.id}`}
+            className="bg-gray-800 p-4 rounded-xl hover:bg-gray-700 transition hover:scale-105 shadow-md"
+          >
+            <h3 className="text-xl font-semibold">{char.name}</h3>
+          </Link>
+        ))}
       </div>
     </main>
   );
